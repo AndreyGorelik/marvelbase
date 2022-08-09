@@ -5,36 +5,33 @@ import CharInfo from "../charInfo/CharInfo";
 import ErrorBoundary from "../errorBoundary/ErrorBoundary";
 
 import decoration from '../../resources/img/vision.png';
-import MarvelService from "../../services/MarvelService";
-import { Component } from "react";
+import { useState } from "react";
 
-class App extends Component {
+function App () {
 
-    state = {
-        selectedChar: null
+    const [selectedChar, setSelectedChar] = useState(null)
+    
+
+    const onCharSelected = (id) => {
+        setSelectedChar(id)
     }
 
-    onCharSelected = (id) => {
-        this.setState({selectedChar: id})
-    }
-
-    render() {
         return (
             <div className="app">
                 <AppHeader/>
                 <main>
                     <RandomChar/>
                     <div className="char__content">
-                        <CharList onCharSelected={this.onCharSelected}/>
+                        <CharList onCharSelected={onCharSelected}/>
                         <ErrorBoundary>
-                            <CharInfo charId={this.state.selectedChar}/>
+                            <CharInfo charId={selectedChar}/>
                         </ErrorBoundary>
                     </div>
                     <img className="bg-decoration" src={decoration} alt="vision"/>
                 </main>
             </div>
         )
-    }
+
 }
 
 export default App;
