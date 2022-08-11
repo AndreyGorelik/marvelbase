@@ -2,41 +2,27 @@ import './charList.scss';
 import { useState, useEffect } from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 
 function CharList(props) {
 
     const [charList, setCharList] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(false)
     const [offset, setOffset] = useState(210)
     const [newItemLoading, setNewItemLoading] = useState(false)
     const [charEnded, setCharEnded] = useState(false)
 
 
-    const marvelService = new MarvelService();
+    const {loading, error, getAllCharacters} = useMarvelService();
 
     useEffect(() => {
-        onRequest();
+        onRequest(offset, true);
     }, [])
 
-    //посылаем запрос на сервер и получаем массив с объектами
-    const onRequest = (offset) => {
-        onCharListLoading()
-        marvelService.getAllCharacters(offset)
+    const onRequest = (offset,initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true)
+        getAllCharacters(offset)
             .then(onCharListLoaded)
-            .catch(onError)
     }
-
-    const onCharListLoading = () => {
-        setNewItemLoading(true)
-    }
-
-    //принимаем массив с объектами и меняем стейт
-    //1 раз: в новом стейте - первые 9 объектов
-    //offset увеличиваем на 9
-    //послеющий разы: нажимаем кнопку load more, вызываем onRequest
-    //
 
     const onCharListLoaded = (newCharList) => {
 
@@ -46,19 +32,9 @@ function CharList(props) {
         }
 
         setCharList(charList => [...charList, ...newCharList])
-        setLoading(false)
         setOffset(offset => offset + 9)
         setNewItemLoading(false)
         setCharEnded(ended)
-    }
-
-
-
-
-
-    const onError = () => {
-        setError(true)
-        setLoading(false)
     }
 
 
@@ -79,8 +55,9 @@ function CharList(props) {
         )
     })
 
-    const loadingContent = loading ? <Spinner /> : null;
+    const loadingContent = loading && !newItemLoading ? <Spinner /> : null;
     const errorContent = error ? <ErrorMessage /> : null;
+    
 
     return (
         <div className="char__list">

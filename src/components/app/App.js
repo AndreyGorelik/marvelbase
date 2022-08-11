@@ -20,7 +20,9 @@ function App () {
             <div className="app">
                 <AppHeader/>
                 <main>
+                <ErrorBoundary>
                     <RandomChar/>
+                    </ErrorBoundary>
                     <div className="char__content">
                         <CharList onCharSelected={onCharSelected}/>
                         <ErrorBoundary>
